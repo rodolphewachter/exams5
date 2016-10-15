@@ -1,0 +1,92 @@
+[ ca ]
+default_ca      = root_cbi
+
+[ root_cbi ]
+dir             = .
+certs           = $dir/ROOT_CBI/certs
+new_certs_dir   = $dir/ROOT_CBI/newcerts
+database        = $dir/ROOT_CBI/index.txt
+certificate     = $dir/ROOT_CBI/root_cbi.pem
+serial          = $dir/ROOT_CBI/serial
+private_key     = $dir/ROOT_CBI/root_cbi.key
+default_days    = 365
+default_md      = sha1
+preserve        = no
+policy          = policy_match
+
+[ root_cbi_g2 ]
+dir             = .
+certs           = $dir/ROOT_CBI_G2/certs
+new_certs_dir   = $dir/ROOT_CBI_G2/newcerts
+database        = $dir/ROOT_CBI_G2/index.txt
+certificate     = $dir/ROOT_CBI_G2/root_cbi_g2.pem
+serial          = $dir/ROOT_CBI_G2/serial
+private_key     = $dir/ROOT_CBI_G2/root_cbi_g2.key
+default_days    = 365
+default_md      = sha1
+preserve        = no
+policy          = policy_match
+
+[ policy_match ]
+countryName             = optional
+stateOrProvinceName     = optional
+localityName		= optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = optional
+emailAddress            = optional
+
+[ req ]
+distinguished_name      = req_distinguished_name
+
+[ req_distinguished_name ]
+countryName                     = Pays
+countryName_default             = FR
+stateOrProvinceName             = Departement
+stateOrProvinceName_default     = Ile-de-France
+localityName                    = Ville
+localityName_default            = Vincennes
+organizationName        	= organisation
+organizationName_default        = Rodolphe Wachter
+commonName                      = Nom ou URL
+commonName_max                  = 64
+emailAddress                    = Adresse Email
+emailAddress_max                = 40
+
+[ROOT_CBI]
+nsComment                       = "CA Racine"
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid,issuer:always
+basicConstraints                = critical,CA:TRUE,pathlen:1
+keyUsage                        = keyCertSign, cRLSign
+
+[ROOT_CBI_G2]
+nsComment                       = "CA SSL"
+basicConstraints                = critical,CA:TRUE,pathlen:0
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid,issuer:always
+issuerAltName                   = issuer:copy
+keyUsage                        = keyCertSign, cRLSign
+nsCertType                      = sslCA
+
+[www.cantbreakit.fr]
+nsComment                       = "Certificat Serveur SSL"
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid,issuer:always
+issuerAltName                   = issuer:copy
+subjectAltName                  = DNS:www.webserver.com, DNS:www.webserver-bis.com
+basicConstraints                = critical,CA:FALSE
+keyUsage                        = digitalSignature, nonRepudiation, keyEncipherment
+nsCertType                      = server
+extendedKeyUsage                = serverAuth
+
+[ubuntu@cantbreakit.fr]
+nsComment                       = "Certificat Client SSL"
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid,issuer:always
+issuerAltName                   = issuer:copy
+subjectAltName                  = critical,email:copy,email:user-bis@domain.com,email:user-ter@domain.com
+basicConstraints                = critical,CA:FALSE
+keyUsage                        = digitalSignature, nonRepudiation
+nsCertType                      = client
+extendedKeyUsage                = clientAuth
