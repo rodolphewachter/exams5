@@ -68,7 +68,8 @@ user nobody
 group nogroup 
 persist-key 
 persist-tun 
-comp-lzo " > $chemin/serveur/$server/$server.conf
+comp-lzo 
+daemon	" > $chemin/serveur/$server/$server.conf
 	echo "Votre configuration serveur est achever !"
 #FIN - CREATION SERVEUR
 #----------------------------------
@@ -123,7 +124,8 @@ elif [ $reponse -eq "3" ];then
 	read server
 
 	ln -s $chemin/serveur/$server/* $openvpn/
-	service openvpn restart
+	cd $openvpn
+	openvpn --config $openvpn/$server.conf
 	echo "Serveur actif !"
 #FIN - ACTIVER UN SERVEUR
 #---------------------------------
@@ -143,7 +145,7 @@ elif [ $reponse -eq "4" ];then
         rm $openvpn/dh2048.* 
         rm $openvpn/tls.key 
 	rm -R $chemin/serveur/$server
-	
+	ps -aux | grep "openvpn --config $openvpn/$server.conf" | awk '{print $2}' | xargs kill
 	service openvpn restart
 	echo "Serveur supprimer !"
 #FIN - SUPPRIMER UN SERVEUR
@@ -173,7 +175,7 @@ elif [ $reponse -eq "6" ];then
         rm $openvpn/$server.*
         rm $openvpn/dh2048.*
         rm $openvpn/tls.key
-
+	ps -aux | grep "openvpn --config $openvpn/$server.conf" | awk '{print $2}' | xargs kill
 	service openvpn restart
 	echo "Serveur désactiver !"
 
